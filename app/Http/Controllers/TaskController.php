@@ -24,9 +24,18 @@ class TaskController extends Controller
     }
 
 
-    public function exportUserTasks(int $userId)
-    {
-        #
+    //exporter les taches d'un utilisateur en format fichier csv
+    //mettre ce fichier dans le dossier public
+    //et retourner une url vers ce fichier
+    public function export(int $token){
+        if(!is_null($token)){
+            $tasks = Task::Where('user_id', $this->getIdFromToken($token))->get();
+            $csv = $this->createCsv($tasks);
+            $csv->output('tasks.csv', 'String');
+            return response()->json(["response"=>true,"message"=>"Taches selectionnes","result"=>$csv->getContent()]);
+        }else
+
+            return $this->error("Pas authentifier");
     }
 
     /**
@@ -130,11 +139,12 @@ class TaskController extends Controller
     }
 
 
-    /**
-     *
-     */
-    public function deleteAllUserTasks(int $userId)
+   //effacer toute les taches d'un utilisateur
+   //fournit l'id du user pour le token
+    public function deleteAll(int $id)
     {
-        # code...
+        if(Task::where("user_id",$id)->delete()) return response()->json(["response"=>true,"message"=>"Toutes les taches de l'utilisateur ont été supprimées","result"=>"Toutes les taches de l'utilisateur ont été supprimées"]);
+        return $this->error("La tache n'a pas pu etre supprimee");
     }
+
 }
