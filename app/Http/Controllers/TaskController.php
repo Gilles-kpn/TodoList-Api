@@ -147,4 +147,11 @@ class TaskController extends Controller
         return $this->error("La tache n'a pas pu etre supprimee");
     }
 
+    //search tash by title using like
+    public function search(Request $request,int $token)
+    {
+        $tasks = Task::where('user_id', $this->getIdFromToken($token))->where('title','like',$request->input('search'))->get();
+        return response()->json(["response"=>true,"message"=>"Taches selectionnes","result"=>$tasks->toArray()]);
+    }
+
 }
