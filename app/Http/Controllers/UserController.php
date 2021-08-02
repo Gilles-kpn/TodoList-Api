@@ -58,28 +58,21 @@ class UserController extends Controller
     //get new password and old password from request
     //validate request
     //update password in database
-    public function updatePassword(Request $request){
+    public function updatePassword(Request $request,int $userId){
         $request->validate([
             'oldPassword' => 'required|min:6|max:20',
             'newPassword' => 'required|min:6|max:20',
-            'email' => 'required|email',
-            'confirmPassword' => 'required|min:6|max:20'
         ]);
-        $user = User::where('email',$request->input('email'))->first();
+        $user = User::find($userId);
         if(is_null($user))
-            return $this->error('Cette addresse email n\'est pas enregistree');
+            return $this->error('Modification du mot de passe impossible');
         else{
             if(password_verify($request->input('oldPassword'),$user->password)){
-                if($request->input('newPassword')==$request->input('confirmPassword')){
-                    $user->password = password_hash($request->input('newPassword'),PASSWORD_DEFAULT);
-                    $user->save();
-                    return response()->json(["response"=>true,"message"=>"Mot de passe modifie","result"=>$user]);
-                }
-                else
-                    return $this->error('Les mots de passe ne correspondent pas');
+                $user->password = password_hash($request->input('newPassword'),PASSWORD_DEFAULT);
+                $user->save();
+                return response()->json(["response"=>true,"message"=>"Mot de passe modifie","result"=>$user]);
             }
-            else
-                return $this->error('Mot de passe incorrect');
+         return $this->error('Mot de passe incorrect');
         }
     }
 
