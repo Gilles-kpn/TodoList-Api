@@ -70,7 +70,7 @@ class UserController extends Controller
             if(password_verify($request->input('oldPassword'),$user->password)){
                 $user->password = password_hash($request->input('newPassword'),PASSWORD_DEFAULT);
                 $user->save();
-                return response()->json(["response"=>true,"message"=>"Mot de passe modifie","result"=>$user]);
+                return response()->json(["response"=>true,"message"=>"Mot de passe modifie","result"=>"Mot de passe modifie"]);
             }
          return $this->error('Mot de passe incorrect');
         }
